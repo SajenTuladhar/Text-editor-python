@@ -9,28 +9,56 @@ def change_color():
     text_area.config(fg=color[1])  #ask color returns a tuple of representation of a color but we only need one
 
 def change_font(*args):
-    pass
+    text_area.config(font=(font_name.get(),size_box.get()))
 
 def new_file():
-    pass
+    window.title('Untitled')
+    text_area.delete(1.0, END)
 
 def open_file():
-    pass
+    file = askopenfilename(defaultextension=".txt",file=[("All files","*.*"),
+                                                         ("Text Dcouments","*.txt")])
+    try:
+        window.title(os.path.basename(file))
+        text_area.delete(1.0, END)
+        
+        file = open(file,"r")
+        text_area.insert(1.0,file.read())
+
+    except Exception:
+        print("couldnt open file")
+    finally:
+        file.close()
 
 def save_file():
-    pass
+    file = filedialog.asksaveasfilename(initialfile='untitled.txt',
+                                        defaultextension=".txt",
+                                        filetypes=[("All Files","*.*"),
+                                                   ("Text Documents","*.txt")])
+    if file is None:
+        return
+    else:
+        try:
+            window.title(os.path.basename(file))
+            file = open(file,"w")
+            file.write(text_area.get(1.0,END))
+        except Exception:
+            print("Couldnt save file")
+        finally:
+            file.close()
 
 def cut():
-    pass
+    text_area.event_generate("<<Cut>>")
 
 def copy():
-    pass
+    text_area.event_generate("<<Copy>>")
 
-def about():
-    pass
+def paste():
+    text_area.event_generate("<<Paste>>")
+
 
 def quit():
-    pass
+    window.destroy()
 
 window= Tk()
 window.title("Text Editor programg")
@@ -68,6 +96,30 @@ color_button.grid(row=0,column=0)
 font_box=OptionMenu(frame,font_name, *font.families(),command=change_font)
 font_box.grid(row=0,column=1)
 
+size_box =Spinbox(frame, from_=1, to= 100,textvariable=font_size,command=change_font)
+size_box.grid(row=0,column=2)
+
 scroll_bar.pack(side=RIGHT,fill=Y)
 text_area.config(yscrollcommand=scroll_bar.set)
+
+
+menu_bar=Menu(window)
+window.config(menu=menu_bar)
+
+file_menu= Menu(menu_bar,tearoff=0)
+menu_bar.add_cascade(label='File',menu=file_menu)
+file_menu.add_command(label="New file",command=new_file)
+file_menu.add_command(label="Open file",command=open_file)
+file_menu.add_command(label="Save file",command=save_file)
+file_menu.add_separator()
+file_menu.add_command(label="Exit",command=quit)
+
+edit_menu=Menu(menu_bar,tearoff=0)  
+menu_bar.add_cascade(label='Edit',menu=edit_menu)
+edit_menu.add_command(label="Cut",command=cut)
+edit_menu.add_command(label="Copy",command=copy)
+edit_menu.add_command(label="Paste",command=paste)
+
+
+
 window.mainloop()
