@@ -44,5 +44,5 @@ y= int((screen_height /2) -(window_height/2))
 
 window.geometry( "{}x{}+{}+{}".format(window_width,window_height,x,y))
 
-
+print("Delete function")
 window.mainloop()
